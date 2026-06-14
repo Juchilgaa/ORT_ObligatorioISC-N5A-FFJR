@@ -21,3 +21,14 @@ module "seguridad" {
   app_port    = var.app_port
   db_port     = var.db_port
 }
+
+module "balanceador" {
+  source = "../../modulos/balanceador"
+
+  name_prefix           = local.name_prefix
+  vpc_id                = module.red.vpc_id
+  public_subnet_ids     = module.red.public_subnet_ids
+  alb_security_group_id = module.seguridad.alb_security_group_id
+  app_port              = var.app_port
+  health_check_path     = var.health_check_path
+}

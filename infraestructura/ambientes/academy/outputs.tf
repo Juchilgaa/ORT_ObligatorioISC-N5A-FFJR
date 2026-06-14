@@ -27,3 +27,13 @@ output "rds_security_group_id" {
   description = "ID del Security Group de RDS."
   value       = module.seguridad.rds_security_group_id
 }
+
+output "alb_dns_name" {
+  description = "DNS público del Application Load Balancer."
+  value       = module.balanceador.alb_dns_name
+}
+
+output "target_group_arn" {
+  description = "ARN del Target Group de aplicación."
+  value       = module.balanceador.target_group_arn
+}
