@@ -57,3 +57,9 @@ variable "private_db_subnet_cidrs" {
   type        = list(string)
   default     = ["10.0.21.0/24", "10.0.22.0/24"]
 }
+
+variable "health_check_path" {
+  description = "Path usado por el balanceador para validar la aplicación."
+  type        = string
+  default     = "/health"
+}
