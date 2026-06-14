@@ -12,3 +12,18 @@ output "aws_region" {
   description = "Región AWS configurada."
   value       = var.aws_region
 }
+
+output "alb_security_group_id" {
+  description = "ID del Security Group del ALB."
+  value       = module.seguridad.alb_security_group_id
+}
+
+output "app_security_group_id" {
+  description = "ID del Security Group de la aplicación."
+  value       = module.seguridad.app_security_group_id
+}
+
+output "rds_security_group_id" {
+  description = "ID del Security Group de RDS."
+  value       = module.seguridad.rds_security_group_id
+}
