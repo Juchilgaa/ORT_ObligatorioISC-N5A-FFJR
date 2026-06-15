@@ -99,3 +99,15 @@ variable "db_backup_retention_period" {
   type        = number
   default     = 7
 }
+
+variable "rds_connections_threshold" {
+  description = "Umbral de conexiones RDS para alarma CloudWatch."
+  type        = number
+  default     = 50
+}
+
+variable "alb_unhealthy_threshold" {
+  description = "Umbral de targets no saludables para alarma CloudWatch."
+  type        = number
+  default     = 1
+}
