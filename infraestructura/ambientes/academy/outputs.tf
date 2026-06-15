@@ -37,3 +37,14 @@ output "target_group_arn" {
   description = "ARN del Target Group de aplicación."
   value       = module.balanceador.target_group_arn
 }
+
+output "db_endpoint" {
+  description = "Endpoint privado de RDS."
+  value       = module.base_datos.db_endpoint
+  sensitive   = true
+}
+
+output "db_name" {
+  description = "Nombre de la base de datos."
+  value       = module.base_datos.db_name
+}
