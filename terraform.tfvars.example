@@ -1,4 +1,22 @@
 aws_region   = "us-east-1"
 project_name = "obligatorio-isc"
 environment  = "academy"
-vpc_cidr      = "10.0.0.0/16"
+
+vpc_cidr = "10.0.0.0/16"
+
+azs = ["us-east-1a", "us-east-1b"]
+
+public_subnet_cidrs      = ["10.0.1.0/24", "10.0.2.0/24"]
+private_app_subnet_cidrs = ["10.0.11.0/24", "10.0.12.0/24"]
+private_db_subnet_cidrs  = ["10.0.21.0/24", "10.0.22.0/24"]
+
+app_port          = 3000
+db_port           = 5432
+health_check_path = "/health"
+
+db_name                    = "appdb"
+db_username                = "appuser"
+db_password                = "CAMBIAR_ESTA_PASSWORD"
+db_instance_class          = "db.t3.micro"
+db_allocated_storage       = 20
+db_backup_retention_period = 7

@@ -32,3 +32,17 @@ module "balanceador" {
   app_port              = var.app_port
   health_check_path     = var.health_check_path
 }
+
+module "base_datos" {
+  source = "../../modulos/base_datos"
+
+  name_prefix                = local.name_prefix
+  private_db_subnet_ids      = module.red.private_db_subnet_ids
+  rds_security_group_id      = module.seguridad.rds_security_group_id
+  db_name                    = var.db_name
+  db_username                = var.db_username
+  db_password                = var.db_password
+  db_instance_class          = var.db_instance_class
+  db_allocated_storage       = var.db_allocated_storage
+  db_backup_retention_period = var.db_backup_retention_period
+}
