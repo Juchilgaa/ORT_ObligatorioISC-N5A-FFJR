@@ -17,3 +17,13 @@ output "target_group_arn" {
   description = "ARN del Target Group de aplicación."
   value       = aws_lb_target_group.app.arn
 }
+
+output "alb_arn_suffix" {
+  description = "ARN suffix del ALB para métricas CloudWatch."
+  value       = aws_lb.this.arn_suffix
+}
+
+output "target_group_arn_suffix" {
+  description = "ARN suffix del Target Group para métricas CloudWatch."
+  value       = aws_lb_target_group.app.arn_suffix
+}

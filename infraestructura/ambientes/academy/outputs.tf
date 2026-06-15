@@ -48,3 +48,18 @@ output "db_name" {
   description = "Nombre de la base de datos."
   value       = module.base_datos.db_name
 }
+
+output "cloudwatch_dashboard_name" {
+  description = "Nombre del dashboard de CloudWatch."
+  value       = module.monitoreo.dashboard_name
+}
+
+output "alb_unhealthy_alarm_name" {
+  description = "Nombre de la alarma de targets no saludables."
+  value       = module.monitoreo.alb_unhealthy_alarm_name
+}
+
+output "rds_connections_alarm_name" {
+  description = "Nombre de la alarma de conexiones RDS."
+  value       = module.monitoreo.rds_connections_alarm_name
+}

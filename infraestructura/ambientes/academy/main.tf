@@ -46,3 +46,14 @@ module "base_datos" {
   db_allocated_storage       = var.db_allocated_storage
   db_backup_retention_period = var.db_backup_retention_period
 }
+
+module "monitoreo" {
+  source = "../../modulos/monitoreo"
+
+  name_prefix               = local.name_prefix
+  alb_arn_suffix            = module.balanceador.alb_arn_suffix
+  target_group_arn_suffix   = module.balanceador.target_group_arn_suffix
+  db_instance_id            = module.base_datos.db_instance_id
+  rds_connections_threshold = var.rds_connections_threshold
+  alb_unhealthy_threshold   = var.alb_unhealthy_threshold
+}
