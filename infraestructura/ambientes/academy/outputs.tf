@@ -1,25 +1,25 @@
-output "project_name" {
-  description = "Nombre del proyecto."
-  value       = var.project_name
+output "vpc_id" {
+  description = "ID de la VPC creada."
+  value       = module.red.vpc_id
 }
 
-output "environment" {
-  description = "Ambiente configurado."
-  value       = var.environment
+output "public_subnet_ids" {
+  description = "IDs de las subredes públicas."
+  value       = module.red.public_subnet_ids
 }
 
-output "aws_region" {
-  description = "Región AWS configurada."
-  value       = var.aws_region
+output "private_app_subnet_ids" {
+  description = "IDs de las subredes privadas de aplicación o Kubernetes."
+  value       = module.red.private_app_subnet_ids
 }
 
-output "alb_security_group_id" {
-  description = "ID del Security Group del ALB."
-  value       = module.seguridad.alb_security_group_id
+output "private_db_subnet_ids" {
+  description = "IDs de las subredes privadas de base de datos."
+  value       = module.red.private_db_subnet_ids
 }
 
 output "app_security_group_id" {
-  description = "ID del Security Group de la aplicación."
+  description = "ID del Security Group de aplicación o workloads."
   value       = module.seguridad.app_security_group_id
 }
 
@@ -28,38 +28,23 @@ output "rds_security_group_id" {
   value       = module.seguridad.rds_security_group_id
 }
 
-output "alb_dns_name" {
-  description = "DNS público del Application Load Balancer."
-  value       = module.balanceador.alb_dns_name
-}
-
-output "target_group_arn" {
-  description = "ARN del Target Group de aplicación."
-  value       = module.balanceador.target_group_arn
+output "db_instance_id" {
+  description = "Identificador de la instancia RDS."
+  value       = module.base_datos.db_instance_id
 }
 
 output "db_endpoint" {
-  description = "Endpoint privado de RDS."
+  description = "Endpoint de conexión a RDS."
   value       = module.base_datos.db_endpoint
   sensitive   = true
 }
 
-output "db_name" {
-  description = "Nombre de la base de datos."
-  value       = module.base_datos.db_name
-}
-
 output "cloudwatch_dashboard_name" {
   description = "Nombre del dashboard de CloudWatch."
-  value       = module.monitoreo.dashboard_name
-}
-
-output "alb_unhealthy_alarm_name" {
-  description = "Nombre de la alarma de targets no saludables."
-  value       = module.monitoreo.alb_unhealthy_alarm_name
+  value       = module.monitoreo.cloudwatch_dashboard_name
 }
 
 output "rds_connections_alarm_name" {
-  description = "Nombre de la alarma de conexiones RDS."
+  description = "Nombre de la alarma de conexiones de RDS."
   value       = module.monitoreo.rds_connections_alarm_name
 }

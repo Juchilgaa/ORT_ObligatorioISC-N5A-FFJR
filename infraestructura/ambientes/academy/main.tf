@@ -22,16 +22,6 @@ module "seguridad" {
   db_port     = var.db_port
 }
 
-module "balanceador" {
-  source = "../../modulos/balanceador"
-
-  name_prefix           = local.name_prefix
-  vpc_id                = module.red.vpc_id
-  public_subnet_ids     = module.red.public_subnet_ids
-  alb_security_group_id = module.seguridad.alb_security_group_id
-  app_port              = var.app_port
-  health_check_path     = var.health_check_path
-}
 
 module "base_datos" {
   source = "../../modulos/base_datos"
@@ -51,9 +41,6 @@ module "monitoreo" {
   source = "../../modulos/monitoreo"
 
   name_prefix               = local.name_prefix
-  alb_arn_suffix            = module.balanceador.alb_arn_suffix
-  target_group_arn_suffix   = module.balanceador.target_group_arn_suffix
   db_instance_id            = module.base_datos.db_instance_id
   rds_connections_threshold = var.rds_connections_threshold
-  alb_unhealthy_threshold   = var.alb_unhealthy_threshold
 }
