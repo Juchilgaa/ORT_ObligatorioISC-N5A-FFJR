@@ -58,12 +58,6 @@ variable "private_db_subnet_cidrs" {
   default     = ["10.0.21.0/24", "10.0.22.0/24"]
 }
 
-variable "health_check_path" {
-  description = "Path usado por el balanceador para validar la aplicación."
-  type        = string
-  default     = "/health"
-}
-
 variable "db_name" {
   description = "Nombre de la base de datos inicial."
   type        = string
@@ -106,8 +100,3 @@ variable "rds_connections_threshold" {
   default     = 50
 }
 
-variable "alb_unhealthy_threshold" {
-  description = "Umbral de targets no saludables para alarma CloudWatch."
-  type        = number
-  default     = 1
-}

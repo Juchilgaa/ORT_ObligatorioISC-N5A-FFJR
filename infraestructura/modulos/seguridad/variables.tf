@@ -19,3 +19,9 @@ variable "db_port" {
   type        = number
   default     = 5432
 }
+
+variable "common_tags" {
+  description = "Tags comunes del proyecto."
+  type        = map(string)
+  default     = {}
+}
