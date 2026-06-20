@@ -100,3 +100,24 @@ variable "rds_connections_threshold" {
   default     = 50
 }
 
+variable "lab_role_name" {
+  description = "Nombre del rol IAM utilizado por AWS Academy."
+  type        = string
+  default     = "LabRole"
+}
+
+variable "name_prefix" {
+  description = "Prefijo utilizado para nombrar recursos del proyecto."
+  type        = string
+  default     = "obligatorio-isc"
+}
+
+variable "common_tags" {
+  description = "Tags comunes aplicados a los recursos."
+  type        = map(string)
+  default = {
+    Proyecto    = "obligatorio-isc"
+    Ambiente    = "academy"
+    Universidad = "ORT"
+  }
+}

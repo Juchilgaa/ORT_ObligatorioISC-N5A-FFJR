@@ -48,3 +48,23 @@ output "rds_connections_alarm_name" {
   description = "Nombre de la alarma de conexiones de RDS."
   value       = module.monitoreo.rds_connections_alarm_name
 }
+
+output "eks_cluster_name" {
+  description = "Nombre del cluster EKS."
+  value       = module.eks.cluster_name
+}
+
+output "eks_cluster_endpoint" {
+  description = "Endpoint del cluster EKS."
+  value       = module.eks.cluster_endpoint
+}
+
+output "eks_node_group_name" {
+  description = "Nombre del Node Group de EKS."
+  value       = module.eks.node_group_name
+}
+
+output "eks_kubeconfig_command" {
+  description = "Comando para configurar kubectl."
+  value       = module.eks.kubeconfig_command
+}

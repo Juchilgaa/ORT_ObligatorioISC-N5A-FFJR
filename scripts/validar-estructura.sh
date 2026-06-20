@@ -65,7 +65,7 @@ check_file "infraestructura/ambientes/academy/.terraform.lock.hcl"
 echo ""
 
 echo "== Módulos Terraform =="
-for modulo in red seguridad base_datos monitoreo respaldos; do
+for modulo in red seguridad eks base_datos monitoreo respaldos; do
   check_dir "infraestructura/modulos/$modulo"
 
   if [ "$modulo" = "respaldos" ]; then

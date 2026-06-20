@@ -44,3 +44,13 @@ module "monitoreo" {
   db_instance_id            = module.base_datos.db_instance_id
   rds_connections_threshold = var.rds_connections_threshold
 }
+
+module "eks" {
+  source = "../../modulos/eks"
+
+  name_prefix               = var.name_prefix
+  lab_role_name             = var.lab_role_name
+  private_subnet_ids        = module.red.private_app_subnet_ids
+  cluster_security_group_id = module.seguridad.app_security_group_id
+  common_tags               = var.common_tags
+}
