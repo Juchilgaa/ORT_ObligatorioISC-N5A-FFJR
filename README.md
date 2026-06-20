@@ -2,7 +2,7 @@
 
 Repositorio del obligatorio de la materia **Implementación de Soluciones Cloud**.
 
-El objetivo del proyecto es implementar en AWS una arquitectura equivalente y mejorada a la solución planteada en la letra del obligatorio, utilizando **Terraform**, servicios administrados de AWS, documentación técnica y trabajo colaborativo mediante Git.
+El objetivo del proyecto es implementar una solución cloud en AWS utilizando **Terraform**, servicios administrados, documentación técnica y trabajo colaborativo mediante Git.
 
 ---
 
@@ -10,64 +10,102 @@ El objetivo del proyecto es implementar en AWS una arquitectura equivalente y me
 
 | Integrante | Aporte principal |
 |---|---|
-| Fferreira |
-| JRecalde |
+| Fferreira | Infraestructura base, seguridad, RDS, monitoreo y documentación |
+| JRecalde | Red, evolución de arquitectura, limpieza de ALB clásico y preparación para Kubernetes/EKS |
 
 ---
 
-## Arquitectura
+## Arquitectura objetivo
 
-La solución base se apoya en una arquitectura clásica en AWS:
+La arquitectura del proyecto evolucionó desde una propuesta clásica basada en EC2 hacia una solución orientada a Kubernetes.
+
+El diseño objetivo es:
 
 ```text
 Internet
-  -> Application Load Balancer público
-  -> Capa de aplicación privada
+  -> Ingress / Load Balancer gestionado por Kubernetes
+  -> Service Kubernetes
+  -> Pods de aplicación
   -> Amazon RDS PostgreSQL privado
 ```
 
 ```mermaid
 flowchart TD
-    usuario[Usuario / Internet] --> alb[Application Load Balancer]
+    usuario[Usuario / Internet] --> ingress[Ingress / Load Balancer]
 
     subgraph vpc[VPC 10.0.0.0/16]
         subgraph publicas[Subredes públicas]
-            alb
+            ingress
             nat[NAT Gateway]
             igw[Internet Gateway]
         end
 
-        subgraph privadas_app[Subredes privadas de aplicación]
-            app[EC2 / Auto Scaling Group / Docker]
+        subgraph privadas_k8s[Subredes privadas Kubernetes]
+            eks[EKS / Kubernetes]
+            svc[Service]
+            pods[Pods de aplicación]
         end
 
         subgraph privadas_db[Subredes privadas de base de datos]
             rds[(Amazon RDS PostgreSQL)]
         end
 
-        alb --> app
-        app --> rds
-        app --> nat
+        ingress --> svc
+        svc --> pods
+        pods --> rds
+        pods --> nat
         nat --> igw
     end
 ```
 
 ---
 
+## Decisión de arquitectura
+
+Inicialmente se había previsto una arquitectura clásica:
+
+```text
+ALB -> EC2 / Auto Scaling Group -> Docker -> RDS
+```
+
+Luego se decidió evolucionar hacia Kubernetes/EKS. Por ese motivo se eliminaron el módulo de ALB clásico y el módulo de cómputo vacío.
+
+La decisión se tomó para evitar duplicar componentes. En una arquitectura con Kubernetes, la publicación externa de la aplicación se realiza mediante **Ingress**, y el balanceador asociado es gestionado desde Kubernetes.
+
+Terraform sigue siendo utilizado para crear la infraestructura base de AWS. Kubernetes será utilizado para desplegar y operar la aplicación.
+
+---
+
 ## Componentes implementados
 
 - VPC dedicada.
-- Subredes públicas y privadas en dos zonas de disponibilidad.
-- Internet Gateway y NAT Gateway.
-- Application Load Balancer.
-- Target Group.
-- Security Groups por capa.
+- Subredes públicas y privadas.
+- Internet Gateway.
+- NAT Gateway.
+- Security Groups base.
 - Amazon RDS PostgreSQL privado.
 - Backups automáticos de RDS.
-- Monitoreo con CloudWatch.
-- Dashboard y alarmas.
+- Monitoreo inicial con CloudWatch.
 - Terraform modular.
 - Script de validación de estructura.
+- Documentación técnica.
+
+---
+
+## Componentes pendientes
+
+- Módulo Terraform para EKS.
+- Manifiestos Kubernetes.
+- Aplicación dockerizada.
+- Namespace.
+- Deployment.
+- Service.
+- Ingress.
+- ConfigMap.
+- Secret de ejemplo.
+- Horizontal Pod Autoscaler.
+- Pruebas finales.
+- Evidencias de funcionamiento.
 
 ---
 
@@ -80,12 +118,11 @@ infraestructura/
   modulos/
     red/
     seguridad/
-    balanceador/
-    computo/
     base_datos/
     monitoreo/
     respaldos/
 
+kubernetes/
 aplicacion/
 docs/
 pruebas/
@@ -110,8 +147,6 @@ Si el repositorio ya estaba clonado:
 git checkout main
 git pull origin main
 ```
-
----
 
 ### 2. Configurar credenciales AWS Academy
 
@@ -159,9 +194,23 @@ aws sts get-caller-identity
 
 Si aparece `ExpiredToken`, copiar nuevamente las credenciales desde AWS Academy.
 
----
+### 3. Crear archivo de variables local
 
-### 3. Validar estructura del proyecto
+El archivo real `terraform.tfvars` no se sube al repositorio porque puede contener datos sensibles.
+
+```bash
+cp terraform.tfvars.example infraestructura/ambientes/academy/terraform.tfvars
+```
+
+Editar:
+
+```bash
+vi infraestructura/ambientes/academy/terraform.tfvars
+```
+
+Cambiar valores sensibles como la contraseña de RDS.
+
+### 4. Validar estructura del proyecto
 
 Desde la raíz del repositorio:
 
@@ -175,33 +224,7 @@ Resultado esperado:
 Validación finalizada sin errores
 ```
 
----
-
-### 4. Crear variables locales
-
-El archivo real `terraform.tfvars` no se sube al repositorio.
-
-Crear una copia desde el ejemplo:
-
-```bash
-cp terraform.tfvars.example infraestructura/ambientes/academy/terraform.tfvars
-```
-
-Editar valores sensibles:
-
-```bash
-vi infraestructura/ambientes/academy/terraform.tfvars
-```
-
-Cambiar, por ejemplo:
-
-```hcl
-db_password = "CAMBIAR_ESTA_PASSWORD"
-```
-
----
-
-### 5. Validar Terraform
+### 5. Ejecutar Terraform
 
 Terraform se ejecuta desde el ambiente `academy`:
 
@@ -212,12 +235,6 @@ terraform fmt -recursive
 terraform validate
 terraform plan
 ```
-
-No ejecutar Terraform desde la raíz del repositorio.
-
----
-
-### 6. Aplicar infraestructura
 
 Luego de revisar el plan:
 
@@ -231,69 +248,25 @@ Confirmar con:
 yes
 ```
 
-Se recomienda que este paso lo ejecute un solo integrante para evitar inconsistencias de estado.
-
----
-
-### 7. Ver outputs
-
-```bash
-terraform output
-```
-
-Para obtener el DNS del balanceador:
-
-```bash
-terraform output alb_dns_name
-```
-
----
-
-### 8. Destruir infraestructura
-
-Al finalizar las pruebas:
+Para destruir la infraestructura al finalizar:
 
 ```bash
 terraform destroy
 ```
 
-Confirmar con:
-
-```text
-yes
-```
-
----
-
-## Docker
-
-Docker está previsto para ejecutar la aplicación dentro de la capa de cómputo.
-
-Diseño esperado:
-
-```text
-ALB -> Auto Scaling Group -> EC2 privada -> Docker container -> RDS
-```
-
-Pendiente:
-
-- Crear aplicación.
-- Agregar `Dockerfile`.
-- Ejecutar contenedor desde EC2 mediante `user_data`.
-- Registrar instancias en el Target Group.
-
 ---
 
 ## Kubernetes
 
-Kubernetes no forma parte de la arquitectura base implementada, pero queda planteado como evolución posible del proyecto.
+Kubernetes se incorpora como evolución de la solución para administrar la capa de aplicación de forma declarativa.
 
-La solución base con ALB, EC2, Auto Scaling Group, Docker y RDS cubre los requerimientos principales sin agregar complejidad innecesaria.
-
-Como siguiente etapa, se podrá evaluar:
+La estructura prevista es:
 
 ```text
-Internet -> ALB / Ingress -> Kubernetes -> Pods -> RDS
+kubernetes/
+  namespaces/
+  config/
+  app/
 ```
 
 Componentes previstos:
@@ -303,7 +276,7 @@ Componentes previstos:
 - Service.
 - Ingress.
 - ConfigMap.
-- Secret.
+- Secret de ejemplo.
 - HorizontalPodAutoscaler.
 
 ---
@@ -322,9 +295,11 @@ Documentos principales:
 - `docs/03-red-y-seguridad.md`
 - `docs/07-rds-y-respaldos.md`
 - `docs/08-monitoreo.md`
+- `docs/09-kubernetes.md`
 - `docs/11-uso-de-ia.md`
 - `docs/12-matriz-trazabilidad.md`
 - `docs/13-runbook-operativo.md`
+- `docs/decisiones/decision-kubernetes.md`
 
 ---
 
@@ -333,18 +308,19 @@ Documentos principales:
 Implementado:
 
 - Red.
-- Seguridad.
-- Balanceador.
+- Seguridad base.
 - RDS.
 - Backups automáticos.
-- Monitoreo.
+- Monitoreo inicial.
 - Documentación técnica.
 - Script de validación.
+- Limpieza de módulos no utilizados para la arquitectura Kubernetes.
 
 Pendiente:
 
-- Módulo de cómputo.
+- Módulo Terraform de EKS.
+- Manifiestos Kubernetes.
 - Aplicación Dockerizada.
-- Integración final con Target Group.
-- Evaluación/incorporación de Kubernetes.
-- Evidencias de pruebas.
+- Ingress.
+- Pruebas finales.
+- Evidencias.
